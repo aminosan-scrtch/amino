@@ -6,7 +6,8 @@ Bitstamp BTC/USD データ取得スクリプト（設定変更可能版）
 2. 下記の設定変数を変更
 3. python get_bitstamp_data.py
 
-出力: bitstamp_btcusd_YYYYMMDD_HHMM_Xm.csv と .json
+出力: bitstamp_btcusd_YYYYMMDD_HHMM_HHMM_Xm.csv と .json
+      (例: bitstamp_btcusd_20251021_1300_1530_1m.csv)
 """
 
 import ccxt
@@ -53,20 +54,26 @@ def jst_to_utc(jst_time_str):
     return utc_dt.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-def generate_filename(start_time_jst, timeframe):
+def generate_filename(start_time_jst, end_time_jst, timeframe):
     """
-    ファイル名を生成（開始日時と時間足を含む）
+    ファイル名を生成（開始日時、終了日時、時間足を含む）
 
     Args:
         start_time_jst: 開始時刻（日本時間の文字列）
+        end_time_jst: 終了時刻（日本時間の文字列）
         timeframe: 時間足 (例: '1m', '5m')
 
     Returns:
-        ファイル名のベース (例: 'bitstamp_btcusd_20251021_1300_1m')
+        ファイル名のベース (例: 'bitstamp_btcusd_20251021_1300_1530_1m')
     """
-    dt = datetime.strptime(start_time_jst, '%Y-%m-%d %H:%M:%S')
-    date_str = dt.strftime('%Y%m%d_%H%M')
-    return f'bitstamp_btcusd_{date_str}_{timeframe}'
+    start_dt = datetime.strptime(start_time_jst, '%Y-%m-%d %H:%M:%S')
+    end_dt = datetime.strptime(end_time_jst, '%Y-%m-%d %H:%M:%S')
+
+    start_date = start_dt.strftime('%Y%m%d')
+    start_time = start_dt.strftime('%H%M')
+    end_time = end_dt.strftime('%H%M')
+
+    return f'bitstamp_btcusd_{start_date}_{start_time}_{end_time}_{timeframe}'
 
 
 def fetch_ohlcv_paginated(exchange, symbol, timeframe, start_date_utc, end_date_utc):
@@ -204,7 +211,7 @@ def main():
     print()
 
     # ファイル名を生成
-    filename_base = generate_filename(START_TIME_JST, TIMEFRAME)
+    filename_base = generate_filename(START_TIME_JST, END_TIME_JST, TIMEFRAME)
 
     # CSV保存
     df_output = df[['timestamp_jst', 'open', 'high', 'low', 'close', 'volume']].copy()
