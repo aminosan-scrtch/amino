@@ -1,0 +1,17 @@
+feature,importance
+volatility_50,199
+volatility_20,147
+MA_50,140
+MA_100,131
+trend_50,125
+momentum_24h,125
+MA_5,123
+MACD_diff,116
+RSI_14,112
+MA_20,103
+BB_position,86
+day_sin,64
+trend_20,58
+day_cos,44
+hour_sin,35
+hour_cos,23
